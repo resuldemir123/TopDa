@@ -75,8 +75,8 @@ export default function StoreLoginPage() {
   return (
     <div className="min-h-screen bg-slate-900 px-4 py-12 sm:px-6">
       <div className="mx-auto w-full max-w-md">
-        <Link to="/katalog" className="text-sm font-semibold text-emerald-300 hover:text-emerald-200">
-          ← Kataloga dön
+        <Link to="/" className="text-sm font-semibold text-emerald-300 hover:text-emerald-200">
+          ← Ana sayfaya dön
         </Link>
         <div className="mt-6 rounded-2xl border border-slate-700 bg-slate-800/60 p-6 shadow-xl">
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-400">Mağaza</p>
