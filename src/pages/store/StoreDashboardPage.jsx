@@ -1,0 +1,172 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useAuthStore } from '../../store/useAuthStore';
+import { getStoreOrders, getToptanciByCode } from '../../services/firestore';
+import { useNavigate } from 'react-router-dom';
+
+export default function StoreDashboardPage() {
+  const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [inviteCode, setInviteCode] = useState('');
+  const [inviteError, setInviteError] = useState('');
+  const [inviteBusy, setInviteBusy] = useState(false);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    (async () => {
+      try {
+        const rows = await getStoreOrders(user.uid);
+        setOrders(rows);
+      } catch (e) {
+        console.error('Siparişler yüklenemedi:', e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [user]);
+
+  async function handleJoinWithCode(e) {
+    e.preventDefault();
+    if (!inviteCode.trim()) return;
+    setInviteBusy(true);
+    setInviteError('');
+    try {
+      const toptanci = await getToptanciByCode(inviteCode.trim());
+      if (toptanci) {
+        navigate(`/toptanci/${toptanci.id}`);
+      } else {
+        setInviteError('Geçersiz davet kodu. Lütfen kontrol edin.');
+      }
+    } catch (err) {
+      setInviteError(err.message?.includes('failed-precondition') 
+          ? 'Firestore indeks gerekli: isletmeler için status + created_at birleşik indeksini oluşturun.'
+          : 'Kod kontrol edilirken hata oluştu.');
+    } finally {
+      setInviteBusy(false);
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8">
+      {/* Üst Bilgi Kartı */}
+      <div className="ui-card border-emerald-100/80 bg-gradient-to-br from-white to-emerald-50/40 p-6 shadow-sm sm:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="ui-kicker">Hoş geldiniz</p>
+            <h1 className="mt-2 text-3xl font-bold text-slate-900">Mağaza Paneli</h1>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600 max-w-xl">
+              Hesabınız <strong className="text-emerald-700">onaylı</strong>. Kataloglar üzerinden siparişlerinizi verebilir,
+              aşağıdaki listeden geçmiş siparişlerinizin durumunu anlık olarak takip edebilirsiniz.
+            </p>
+          </div>
+          <div className="flex flex-col gap-4">
+            <Link to="/katalog" className="ui-btn-primary h-fit shadow-md shadow-emerald-600/20 px-8 text-center">
+              Tüm Kataloglar
+            </Link>
+            
+            {/* Kodla Katıl Formu */}
+            <form onSubmit={handleJoinWithCode} className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Davet Kodu Gir"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value)}
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-emerald-500 w-32"
+                />
+                <button 
+                  type="submit" 
+                  disabled={inviteBusy}
+                  className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800 disabled:opacity-50"
+                >
+                  Git
+                </button>
+              </div>
+              {inviteError && <p className="text-[10px] text-red-600 font-bold">{inviteError}</p>}
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Sipariş Geçmişi */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-bold text-slate-800">Sipariş Geçmişim</h2>
+          <span className="text-xs text-slate-500">{orders.length} toplam kayıt</span>
+        </div>
+
+        {loading ? (
+          <div className="ui-card h-48 animate-pulse bg-slate-50" />
+        ) : orders.length === 0 ? (
+          <div className="ui-card flex flex-col items-center justify-center p-12 text-center text-slate-500">
+            <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center mb-4">🛒</div>
+            <p className="text-sm">Henüz bir siparişiniz bulunmuyor.</p>
+          </div>
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-1">
+            {orders.map((order) => (
+              <div key={order.id} className="ui-card overflow-hidden border-slate-200 transition-all hover:shadow-md">
+                <div className="flex flex-wrap items-start justify-between border-b border-slate-50 bg-slate-50/50 p-4">
+                  <div>
+                    <p className="text-xs font-bold text-slate-500 uppercase tracking-tight">Sipariş No: #{order.id.slice(-6).toUpperCase()}</p>
+                    <p className="mt-0.5 text-xs text-slate-400">
+                      {order.created_at?.toDate 
+                        ? order.created_at.toDate().toLocaleString('tr-TR')
+                        : 'Tarih belirsiz'}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${
+                      order.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                      order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                      order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                      'bg-slate-100 text-slate-600'
+                    }`}>
+                      {order.status === 'pending' ? 'Beklemede' :
+                       order.status === 'approved' ? 'Hazırlanıyor' :
+                       order.status === 'shipped' ? 'Kargoda' :
+                       order.status === 'delivered' ? 'Teslim Edildi' : order.status}
+                    </span>
+                    <span className="text-sm font-bold text-emerald-700">
+                      {order.total_amount?.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="h-6 w-6 rounded bg-slate-200 flex items-center justify-center text-[10px]">🏢</div>
+                    <p className="text-sm font-semibold text-slate-700">
+                      {order.toptanci_info?.firmaAdi || 'Bilinmeyen Toptancı'}
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    {order.items?.map((item, idx) => (
+                      <div key={idx} className="flex items-center justify-between text-xs text-slate-600">
+                        <span className="flex-1 truncate pr-4">• {item.name} ({item.variantName || 'Standart'})</span>
+                        <span className="font-medium text-slate-900">{item.quantity} Çift</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="ui-card p-5 text-sm text-slate-500 bg-slate-50/30 border-dashed">
+        <p className="flex items-center gap-2 font-semibold text-slate-700">
+          <span>💡</span> İpucu
+        </p>
+        <p className="mt-2 text-xs leading-relaxed">
+          Siparişleriniz doğrudan toptancının paneline düşer. Durum güncellemelerini buradan takip edebilirsiniz. 
+          Herhangi bir sorunuz olduğunda ilgili toptancı ile WhatsApp üzerinden iletişime geçebilirsiniz.
+        </p>
+      </div>
+    </div>
+  );
+}

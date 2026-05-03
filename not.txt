@@ -1,0 +1,33 @@
+-Abi bir kez buraya bir mağaza sahibi girdi  o konuyla ile ilgi tüm toptancıları mı görecek sadece bir kişininkini mi
+Şİmdi burda sadece bir toptncıınkini görecek toptancı kendi sayfasını olulturacak sistem üzerinden kişi gidip o toptancının veridği link üzerine o kataloga ulaşabilmeli
+ya da sitenin ana sayfasından bakacağı toptancıyı seçebilsin sistemden öyle çıksın katalog karşısına 
+
+ToptancıSisteme kayıt olur, kendi katalog sayfasını oluşturur ve yönetirMağaza SahibiSisteme kayıt olmadan veya giriş yaparak toptancı kataloglarını görüntüle
+
+İstediğiniz sistem kurgusu, "Çoklu Katalog Yönetim Platformu" mantığıyla çalışacak şekilde tasarlanabilir. Burada ana prensip, toptancıların kendi mağaza vitrinlerini oluşturduğu, mağaza sahiplerinin ise bu vitrinlere kontrollü bir şekilde ulaştığı bağımsız bir yapı kurmaktır.
+
+### Sistem İşleyişi ve Roller
+
+Sistem, toptancıların kendi verilerini bağımsızca yönetebileceği, mağaza sahiplerinin ise bu kataloglara erişebileceği bir altyapıya sahip olmalıdır.
+
+| Özellik | Toptancı | Mağaza Sahibi |
+| :--- | :--- | :--- |
+| **Profil Yönetimi** | Kendi katalog sayfasını kurar ve özelleştirir. | Profil bilgilerini günceller ve favori toptancılarını saklar. |
+| **Erişim Yetkisi** | Kendi katalog linkini dilediği kişiyle paylaşır. | Kataloglara linkle veya ana sayfa üzerinden erişir. |
+| **Veri Kontrolü** | Ürün, fiyat ve stok güncellemelerini yapar. | Güncel katalogları görüntüler ve sipariş detaylarını yönetir. |
+
+### Toptancı Katalog Yönetimi
+
+Toptancılar, sisteme kayıt olduktan sonra kendilerine ait özel bir panel üzerinden kataloglarını oluştururlar.
+
+- **Katalog Sayfası:** Her toptancı, sistem içinde kendine ait, markasını yansıtan bağımsız bir alt sayfaya veya özel bir URL adresine sahip olur.
+- **Yönetim:** Toptancı, bu alan üzerinden ürün ekleme, fiyat güncelleme, stok takibi ve kampanya yönetimi gibi işlemleri yapar.
+- **Paylaşım:** Toptancı, kendi katalog sayfasına ait benzersiz bir linki, mağaza sahiplerine doğrudan ileterek veya sosyal platformlarda paylaşarak erişim sağlar.
+
+### Mağaza Sahibi Erişim Yolları
+
+Mağaza sahipleri için esnek bir erişim mekanizması kurulur; bu sayede hem doğrudan hem de platform üzerinden kataloglara ulaşmaları sağlanır.
+
+- **Doğrudan Erişim:** Toptancının paylaştığı özel linke tıklayan mağaza sahibi, doğrudan o toptancının katalog sayfasına yönlendirilir ve sisteme giriş yapmadan (veya giriş yaparak) ürünleri inceleyebilir.
+- **Merkezi Erişim:** Sitenin ana sayfasında veya "Toptancılar" listesinde, sistemdeki tüm kayıtlı toptancılar görünür. Mağaza sahibi, listelenen toptancılardan birini seçtiğinde, o toptancının sistemde oluşturduğu katalog sayfası karşısına çıkar.
+- **Kişiselleştirme:** İsterse mağaza sahibi sık çalıştığı toptancıları "Favorilerim" bölümüne ekleyerek, her seferinde arama yapmadan hızlıca kataloglara ulaşabilir.
