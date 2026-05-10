@@ -8,6 +8,15 @@
       ],
       "queryScope": "COLLECTION"
     }
+    ,
+    {
+      "collectionId": "orders",
+      "fields": [
+        { "fieldPath": "customer_uid", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ],
+      "queryScope": "COLLECTION"
+    }
   ],
   "fieldOverrides": []
 }

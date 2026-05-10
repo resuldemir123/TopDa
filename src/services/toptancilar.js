@@ -1,5 +1,4 @@
-// Firestore'da toptancilar koleksiyonu ile ilgili işlemler
-import { addDoc, collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
 function normalizeToptanci(id, data) {
@@ -12,27 +11,19 @@ function normalizeToptanci(id, data) {
   };
 }
 
-// Yeni toptancı ekle
-export async function addToptanci({ name, siteUrl, waNumber }) {
-  const ref = await addDoc(collection(db, 'toptancilar'), {
-    name,
-    siteUrl,
-    waNumber,
-    createdAt: new Date(),
-  });
-  return ref.id;
+export async function addToptanci() {
+  throw new Error('client-toptanci-create-disabled');
 }
 
-// Tüm toptancıları getir
 export async function getToptancilar() {
-  const snap = await getDocs(collection(db, 'toptancilar'));
+  const snap = await getDocs(query(collection(db, 'isletmeler'), where('tip', '==', 'toptanci')));
   return snap.docs.map((d) => normalizeToptanci(d.id, d.data()));
 }
 
-// ID ile toptancı getir
 export async function getToptanciById(id) {
-  const ref = doc(db, 'toptancilar', id);
-  const snap = await getDoc(ref);
+  const snap = await getDoc(doc(db, 'isletmeler', id));
   if (!snap.exists()) return null;
-  return normalizeToptanci(snap.id, snap.data());
+  const data = snap.data();
+  if (data.tip !== 'toptanci') return null;
+  return normalizeToptanci(snap.id, data);
 }

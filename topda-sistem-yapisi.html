@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <title>TopDa Sistem Yapisi</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 18mm;
+      }
+
+      body {
+        color: #111827;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12.5px;
+        line-height: 1.55;
+      }
+
+      h1 {
+        border-bottom: 2px solid #059669;
+        color: #064e3b;
+        font-size: 26px;
+        margin: 0 0 18px;
+        padding-bottom: 10px;
+      }
+
+      h2 {
+        color: #065f46;
+        font-size: 17px;
+        margin: 22px 0 8px;
+      }
+
+      p {
+        margin: 0 0 8px;
+      }
+
+      ul {
+        margin: 6px 0 10px 20px;
+        padding: 0;
+      }
+
+      li {
+        margin: 3px 0;
+      }
+
+      code,
+      pre {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        color: #0f172a;
+        font-family: Consolas, "Courier New", monospace;
+      }
+
+      code {
+        padding: 1px 4px;
+      }
+
+      pre {
+        font-size: 11px;
+        line-height: 1.45;
+        margin: 8px 0 12px;
+        padding: 10px;
+        white-space: pre-wrap;
+      }
+
+      .meta {
+        color: #64748b;
+        font-size: 11px;
+        margin-bottom: 18px;
+      }
+
+      .note {
+        background: #ecfdf5;
+        border-left: 4px solid #10b981;
+        margin-top: 12px;
+        padding: 10px 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>TopDa Sistem Yapisi ve Isleyisi</h1>
+    <p class="meta">Production oncesi mevcut mimari ozeti</p>
+
+    <h2>Temel Mimari</h2>
+    <p>
+      TopDa, React + Vite ile gelistirilmis bir frontend uygulamasidir. Ayrica klasik bir backend
+      sunucusu yoktur; kimlik dogrulama, veri saklama ve yetkilendirme Firebase uzerinden yurutulur.
+    </p>
+    <ul>
+      <li><strong>Auth:</strong> Firebase Authentication</li>
+      <li><strong>Veritabani:</strong> Cloud Firestore</li>
+      <li><strong>Yetki modeli:</strong> Firestore <code>isletmeler</code> koleksiyonundaki rol belgeleri</li>
+      <li><strong>Build sistemi:</strong> Vite</li>
+    </ul>
+
+    <h2>Ana Rol Yapisi</h2>
+    <p>Kullanicinin rol bilgisi su belge yolundan okunur:</p>
+    <pre>isletmeler/&lt;firebaseAuthUid&gt;</pre>
+    <p>Toptanci ornegi:</p>
+    <pre>{
+  tip: "toptanci",
+  firmaAdi: "...",
+  telefon: "...",
+  whatsapp: "...",
+  siteUrl: "..."
+}</pre>
+    <p>Magaza ornegi:</p>
+    <pre>{
+  tip: "magaza",
+  status: "pending" | "approved" | "rejected",
+  magazaAdi: "...",
+  yetkiliAdi: "...",
+  telefon: "..."
+}</pre>
+
+    <h2>Magaza Akisi</h2>
+    <ul>
+      <li>Magaza sahibi kayit olur.</li>
+      <li>Firestore'da <code>isletmeler/&lt;uid&gt;</code> altinda <code>tip: "magaza"</code> ve <code>status: "pending"</code> belge olusur.</li>
+      <li>Toptanci panelindeki yetkili kullanici basvuruyu onaylar veya reddeder.</li>
+      <li>Magaza <code>approved</code> oldugunda kataloglara ve siparis akisina erisebilir.</li>
+    </ul>
+
+    <h2>Toptanci Akisi</h2>
+    <ul>
+      <li>Toptanci <code>/admin</code> uzerinden giris yapar.</li>
+      <li>Sistem kullanicinin <code>isletmeler/&lt;uid&gt;</code> belgesinde <code>tip: "toptanci"</code> olup olmadigini kontrol eder.</li>
+      <li>Toptanci kendi urunlerini ekler/gunceller, kendi siparislerini gorur ve magaza basvurularini yonetir.</li>
+      <li>Toptanci hesabi frontend'den acilamaz; Firebase Console, Admin SDK veya Cloud Function gibi guvenilir server tarafli bir akisla olusturulmalidir.</li>
+    </ul>
+
+    <h2>Toptanci Listeleme</h2>
+    <p>Magaza sahibinin gordugu toptanci listesi artik sadece su sorgudan gelir:</p>
+    <pre>isletmeler where tip == "toptanci"</pre>
+    <p>Eski <code>toptancilar</code> koleksiyonu listelemeye dahil edilmez ve yazmaya kapatilmistir.</p>
+
+    <h2>Urun Akisi</h2>
+    <p>Urunler <code>products</code> koleksiyonunda tutulur ve her urun bir toptanciya baglidir.</p>
+    <pre>{
+  toptanciId: "&lt;toptanci uid&gt;",
+  name: "...",
+  price: 123,
+  is_active: true
+}</pre>
+    <ul>
+      <li>Urun olusturmak veya guncellemek icin kullanici gercek toptanci olmalidir.</li>
+      <li><code>products.toptanciId</code>, giris yapan toptancinin UID degeriyle ayni olmalidir.</li>
+      <li>Magaza hesabi urun olusturamaz.</li>
+    </ul>
+
+    <h2>Siparis Akisi</h2>
+    <ul>
+      <li>Magaza katalogdan urunleri sepete ekler.</li>
+      <li>Siparis <code>orders</code> koleksiyonuna yazilir.</li>
+      <li>Siparis olusturmak icin kullanici giris yapmis ve onayli magaza olmalidir.</li>
+      <li><code>customer_uid</code>, giris yapan magaza kullanicisinin UID degeri olmalidir.</li>
+      <li><code>toptanciId</code>, <code>isletmeler</code> icinde gercek bir toptanci belgesine isaret etmelidir.</li>
+      <li>Siparis <code>pending</code> durumuyla baslar.</li>
+    </ul>
+
+    <h2>Ana Koleksiyonlar</h2>
+    <pre>isletmeler
+  &lt;uid&gt;
+    tip: "toptanci" | "magaza"
+    status: "pending" | "approved" | "rejected"
+
+products
+  &lt;productId&gt;
+    toptanciId
+    is_active
+    price
+
+orders
+  &lt;orderId&gt;
+    toptanciId
+    customer_uid
+    customer_info
+    items
+    status
+    total_pairs
+    total_amount</pre>
+
+    <h2>Guvenlik Ozeti</h2>
+    <ul>
+      <li>Herkes kendini toptanci yapamaz.</li>
+      <li>Eski <code>toptancilar</code> koleksiyonuna client tarafindan yazilamaz.</li>
+      <li>Magaza kullanicisi urun olusturamaz.</li>
+      <li>Siparis yazma islemi sadece onayli magaza hesabina aciktir.</li>
+      <li>Toptanci yalnizca kendi urunlerini ve kendisine gelen siparisleri yonetebilir.</li>
+      <li>Magaza yalnizca kendi siparislerini okuyabilir.</li>
+    </ul>
+
+    <div class="note">
+      Kisa ozet: Sistem, <code>isletmeler</code> koleksiyonunu ana rol ve isletme merkezi olarak kullanir.
+      Magaza onaylanir, toptanci secer, urunleri gorur ve siparis verir. Toptanci kendi panelinde urunleri,
+      siparisleri ve magaza basvurularini yonetir.
+    </div>
+  </body>
+</html>

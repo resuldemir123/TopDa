@@ -248,3 +248,26 @@ export async function getToptanciByCode(code) {
   const docSnap = snap.docs[0];
   return { id: docSnap.id, ...docSnap.data() };
 }
+
+/** Tüm toptancıları listeler (yönetici/mağaza panelinde gösterim için) */
+export async function listAllToptancilar() {
+  const snap = await getDocs(query(collection(db, 'isletmeler'), where('tip', '==', 'toptanci')));
+  return snap.docs.map((d) => {
+    const data = d.data();
+    return {
+      id: d.id,
+      ...data,
+      firmaAdi: data.firmaAdi || data.name || '',
+      name: data.firmaAdi || data.name || 'Toptanci',
+    };
+  });
+}
+
+/** Mağaza sahibinin seçtiği toptancıyı mağaza profilinin içine kaydeder */
+export async function saveMagazaSelectedToptanci(magazaUid, toptanciId) {
+  if (!magazaUid) throw new Error('missing-magaza-uid');
+  await updateDoc(doc(db, 'isletmeler', magazaUid), {
+    selectedToptanciId: toptanciId || null,
+    updated_at: serverTimestamp(),
+  });
+}
