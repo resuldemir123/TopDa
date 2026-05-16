@@ -1,15 +1,15 @@
 import {
-  addDoc,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  orderBy,
-  query,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
-  where,
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    orderBy,
+    query,
+    serverTimestamp,
+    setDoc,
+    updateDoc,
+    where,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuthStore } from '../store/useAuthStore';
@@ -93,7 +93,7 @@ export async function createOrder(orderData) {
   const user = useAuthStore.getState().user;
   const ref = await addDoc(collection(db, 'orders'), {
     toptanciId,
-    customer_uid: user?.uid || null,
+    customer_uid: orderData.customer_uid || user?.uid || null,
     toptanci_info: profile
       ? {
         firmaAdi: profile.firmaAdi || '',
@@ -112,6 +112,13 @@ export async function createOrder(orderData) {
     updated_at: serverTimestamp(),
   });
   return ref.id;
+}
+
+export function storeOrdersQuery(uid) {
+  if (!uid) {
+    throw new Error('missing-store-uid');
+  }
+  return query(collection(db, 'orders'), where('customer_uid', '==', uid), orderBy('created_at', 'desc'));
 }
 
 export async function saveProduct(productId, productData) {

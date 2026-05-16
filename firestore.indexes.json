@@ -1,21 +1,85 @@
 {
   "indexes": [
     {
-      "collectionId": "orders",
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "toptanciId", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "customer_uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
       ],
-      "queryScope": "COLLECTION"
+      "density": "SPARSE_ALL"
+    },
+    {
+      "collectionGroup": "orders",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "toptanciId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ],
+      "density": "SPARSE_ALL"
     }
     ,
     {
-      "collectionId": "orders",
+      "collectionGroup": "isletmeler",
+      "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "customer_uid", "order": "ASCENDING" },
-        { "fieldPath": "created_at", "order": "DESCENDING" }
+        {
+          "fieldPath": "tip",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "davetKodu",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
       ],
-      "queryScope": "COLLECTION"
+      "density": "SPARSE_ALL"
+    },
+    {
+      "collectionGroup": "isletmeler",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "tip",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "created_at",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "DESCENDING"
+        }
+      ],
+      "density": "SPARSE_ALL"
     }
   ],
   "fieldOverrides": []
