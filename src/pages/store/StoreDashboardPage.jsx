@@ -126,14 +126,17 @@ export default function StoreDashboardPage() {
                   <div className="flex items-center gap-3">
                     <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${
                       order.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                      order.status === 'approved' ? 'bg-emerald-100 text-emerald-700' :
                       order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
                       order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
                       'bg-slate-100 text-slate-600'
                     }`}>
                       {order.status === 'pending' ? 'Beklemede' :
-                       order.status === 'approved' ? 'Hazırlanıyor' :
+                       order.status === 'approved' ? 'Onaylandi' :
                        order.status === 'shipped' ? 'Kargoda' :
-                       order.status === 'delivered' ? 'Teslim Edildi' : order.status}
+                       order.status === 'delivered' ? 'Teslim Edildi' :
+                       order.status === 'cancelled' ? 'İptal Edildi' :
+                       order.status}
                     </span>
                     <span className="text-sm font-bold text-emerald-700">
                       {order.total_amount?.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}

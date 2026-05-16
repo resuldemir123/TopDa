@@ -5,9 +5,9 @@ import { formatSizesSummary } from '../../utils/cartMath';
 
 const statusOptions = [
   ['pending', 'Bekliyor'],
-  ['confirmed', 'Onaylandi'],
-  ['preparing', 'Hazirlaniyor'],
-  ['completed', 'Tamamlandi'],
+  ['approved', 'Onaylandi'],
+  ['shipped', 'Kargoda'],
+  ['delivered', 'Teslim Edildi'],
   ['cancelled', 'Iptal'],
 ];
 

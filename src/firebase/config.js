@@ -1,7 +1,8 @@
-import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
+import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const required = [
   ['VITE_FIREBASE_API_KEY', import.meta.env.VITE_FIREBASE_API_KEY],
@@ -51,6 +52,7 @@ try {
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 /** Tarayıcıda ve measurementId tanımlıyken Analytics; aksi halde undefined */
 export const analytics =

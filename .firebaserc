@@ -2,6 +2,14 @@
   "projects": {
     "y": "topda-aa4b4"
   },
-  "targets": {},
+  "targets": {
+    "topda-aa4b4": {
+      "storage": {
+        "topda-aa4b4.appspot.com": [
+          "topda-aa4b4.appspot.com"
+        ]
+      }
+    }
+  },
   "etags": {}
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { uploadProductImage } from '../../services/firebaseStorage';
 import {
   deactivateProduct,
   getAdminProducts,
@@ -104,6 +105,8 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState(null);
+  const [uploading, setUploading] = useState({});
+  const [uploadProgress, setUploadProgress] = useState({});
 
   const activeCount = useMemo(
     () => products.filter((product) => product.is_active !== false).length,
@@ -225,6 +228,25 @@ export default function ProductsPage() {
 
   function resetForm() {
     setForm(cloneEmptyForm());
+  }
+
+  async function handleImageUpload(variantIndex, file) {
+    if (!file) return;
+    const uploadKey = `${variantIndex}`;
+    setUploading((prev) => ({ ...prev, [uploadKey]: true }));
+    try {
+      const tempProductId = form.id || `temp-${Date.now()}`;
+      const url = await uploadProductImage(tempProductId, variantIndex, file);
+      updateVariant(variantIndex, 'image', url);
+      setStatus({ type: 'ok', text: 'Resim yuklendi. Urunu kaydetmek icin Kaydet butonuna tiklayin.' });
+    } catch (error) {
+      setStatus({
+        type: 'err',
+        text: error?.message || 'Resim yüklenemedi.',
+      });
+    } finally {
+      setUploading((prev) => ({ ...prev, [uploadKey]: false }));
+    }
   }
 
   async function handleSubmit(e) {
@@ -526,6 +548,23 @@ export default function ProductsPage() {
                       className="ui-input"
                       placeholder="https://..."
                     />
+                  </label>
+
+                  <label className="mt-3 block">
+                    <span className="text-xs font-medium text-slate-600">veya Resim Yükle</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(variantIndex, e.target.files?.[0])}
+                      disabled={uploading[variantIndex] || busy}
+                      className="ui-input disabled:cursor-not-allowed disabled:opacity-50"
+                    />
+                    {uploading[variantIndex] && (
+                      <p className="mt-2 text-xs text-blue-600">Resim yükleniyor...</p>
+                    )}
+                    {variant.image && variant.image.startsWith('https://') && (
+                      <p className="mt-2 text-xs text-emerald-600">✓ Resim başarıyla yüklendi</p>
+                    )}
                   </label>
 
                   <div className="mt-4">
