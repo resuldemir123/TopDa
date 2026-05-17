@@ -33,12 +33,12 @@ export default function ProtectedCatalog({ children }) {
       try {
         const r = await resolveAuthRole(user);
         if (cancelled) return;
-        
+
         if (r.isToptanci) {
           setGate('admin');
           return;
         }
-        
+
         if (!r.isMagaza) {
           setGate('unauthorized');
           return;
@@ -55,14 +55,14 @@ export default function ProtectedCatalog({ children }) {
   }, [user, loading]);
 
   if (loading || gate === null) return <Spinner />;
-  
+
   if (gate === 'login') return <Navigate to="/magaza/giris" replace />;
   if (gate === 'admin') return <Navigate to="/admin/siparisler" replace />;
   if (gate === 'unauthorized') return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 text-center">
       <h1 className="text-xl font-bold text-slate-900">Erişim Yetkiniz Yok</h1>
       <p className="mt-2 text-slate-600">Bu sayfayı görmek için mağaza hesabı gereklidir.</p>
-      <button 
+      <button
         onClick={() => signOut(auth)}
         className="mt-4 ui-btn-primary"
       >
@@ -70,6 +70,6 @@ export default function ProtectedCatalog({ children }) {
       </button>
     </div>
   );
-  
+
   return children;
 }

@@ -46,9 +46,9 @@ export default function StoreDashboardPage() {
         setInviteError('Geçersiz davet kodu. Lütfen kontrol edin.');
       }
     } catch (err) {
-      setInviteError(err.message?.includes('failed-precondition') 
-          ? 'Firestore indeks gerekli: isletmeler için status + created_at birleşik indeksini oluşturun.'
-          : 'Kod kontrol edilirken hata oluştu.');
+      setInviteError(err.message?.includes('failed-precondition')
+        ? 'Firestore indeks gerekli: isletmeler için status + created_at birleşik indeksini oluşturun.'
+        : 'Kod kontrol edilirken hata oluştu.');
     } finally {
       setInviteBusy(false);
     }
@@ -71,7 +71,7 @@ export default function StoreDashboardPage() {
             <Link to="/katalog" className="px-8 text-center shadow-md ui-btn-primary h-fit shadow-emerald-600/20">
               Tüm Kataloglar
             </Link>
-            
+
             {/* Kodla Katıl Formu */}
             <form onSubmit={handleJoinWithCode} className="flex flex-col gap-2">
               <div className="flex gap-2">
@@ -82,8 +82,8 @@ export default function StoreDashboardPage() {
                   onChange={(e) => setInviteCode(e.target.value)}
                   className="w-32 px-3 py-2 text-sm bg-white border outline-none rounded-xl border-slate-200 focus:border-emerald-500"
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={inviteBusy}
                   className="px-4 py-2 text-sm font-bold text-white rounded-xl bg-slate-900 hover:bg-slate-800 disabled:opacity-50"
                 >
@@ -118,25 +118,24 @@ export default function StoreDashboardPage() {
                   <div>
                     <p className="text-xs font-bold tracking-tight uppercase text-slate-500">Sipariş No: #{order.id.slice(-6).toUpperCase()}</p>
                     <p className="mt-0.5 text-xs text-slate-400">
-                      {order.created_at?.toDate 
+                      {order.created_at?.toDate
                         ? order.created_at.toDate().toLocaleString('tr-TR')
                         : 'Tarih belirsiz'}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${
-                      order.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                      order.status === 'approved' ? 'bg-emerald-100 text-emerald-700' :
-                      order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
-                      order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
-                      'bg-slate-100 text-slate-600'
-                    }`}>
+                    <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${order.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                        order.status === 'approved' ? 'bg-emerald-100 text-emerald-700' :
+                          order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                            order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                              'bg-slate-100 text-slate-600'
+                      }`}>
                       {order.status === 'pending' ? 'Beklemede' :
-                       order.status === 'approved' ? 'Onaylandi' :
-                       order.status === 'shipped' ? 'Kargoda' :
-                       order.status === 'delivered' ? 'Teslim Edildi' :
-                       order.status === 'cancelled' ? 'İptal Edildi' :
-                       order.status}
+                        order.status === 'approved' ? 'Onaylandi' :
+                          order.status === 'shipped' ? 'Kargoda' :
+                            order.status === 'delivered' ? 'Teslim Edildi' :
+                              order.status === 'cancelled' ? 'İptal Edildi' :
+                                order.status}
                     </span>
                     <span className="text-sm font-bold text-emerald-700">
                       {order.total_amount?.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
@@ -151,7 +150,7 @@ export default function StoreDashboardPage() {
                       {order.toptanci_info?.firmaAdi || 'Bilinmeyen Toptancı'}
                     </p>
                   </div>
-                  
+
                   <div className="space-y-2">
                     {order.items?.map((item, idx) => (
                       <div key={idx} className="flex items-center justify-between text-xs text-slate-600">
@@ -172,7 +171,7 @@ export default function StoreDashboardPage() {
           <span>💡</span> İpucu
         </p>
         <p className="mt-2 text-xs leading-relaxed">
-          Siparişleriniz doğrudan toptancının paneline düşer. Durum güncellemelerini buradan takip edebilirsiniz. 
+          Siparişleriniz doğrudan toptancının paneline düşer. Durum güncellemelerini buradan takip edebilirsiniz.
           Herhangi bir sorunuz olduğunda ilgili toptancı ile WhatsApp üzerinden iletişime geçebilirsiniz.
         </p>
       </div>

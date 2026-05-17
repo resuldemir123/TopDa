@@ -47,13 +47,13 @@ function cloneEmptyForm() {
 function productToForm(product) {
   const variants = Array.isArray(product.variants) && product.variants.length > 0
     ? product.variants.map((variant) => ({
-        color: variant.color || '',
-        color_hex: variant.color_hex || '#cccccc',
-        image: variant.image || '',
-        stockRows: Object.entries(variant.stock || {})
-          .sort(([a], [b]) => Number(a) - Number(b))
-          .map(([size, qty]) => ({ size, qty: Number(qty) || 0 })),
-      }))
+      color: variant.color || '',
+      color_hex: variant.color_hex || '#cccccc',
+      image: variant.image || '',
+      stockRows: Object.entries(variant.stock || {})
+        .sort(([a], [b]) => Number(a) - Number(b))
+        .map(([size, qty]) => ({ size, qty: Number(qty) || 0 })),
+    }))
     : cloneEmptyForm().variants;
 
   return {
@@ -362,11 +362,10 @@ export default function ProductsPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="font-semibold text-slate-900">{product.name}</h3>
                         <span
-                          className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
-                            product.is_active === false
+                          className={`rounded-full px-2 py-0.5 text-xs font-semibold ${product.is_active === false
                               ? 'bg-slate-100 text-slate-600'
                               : 'bg-emerald-50 text-emerald-800'
-                          }`}
+                            }`}
                         >
                           {product.is_active === false ? 'Pasif' : 'Aktif'}
                         </span>
@@ -651,11 +650,10 @@ export default function ProductsPage() {
 
             {status && (
               <p
-                className={`rounded-xl border px-4 py-3 text-sm ${
-                  status.type === 'ok'
+                className={`rounded-xl border px-4 py-3 text-sm ${status.type === 'ok'
                     ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
                     : 'border-red-200 bg-red-50 text-red-900'
-                }`}
+                  }`}
               >
                 {status.text}
               </p>

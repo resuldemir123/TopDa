@@ -7,11 +7,10 @@ import { useWishlistStore } from '../store/useWishlistStore';
 import { getToptanciById } from '../services/toptancilar';
 
 function navLinkClass({ isActive }) {
-  return `rounded-xl px-3.5 py-2 text-sm font-semibold transition-all duration-200 ${
-    isActive
+  return `rounded-xl px-3.5 py-2 text-sm font-semibold transition-all duration-200 ${isActive
       ? 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/25'
       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-  }`;
+    }`;
 }
 
 export default function CatalogLayout() {
@@ -83,10 +82,9 @@ export default function CatalogLayout() {
             <NavLink
               to="/magaza/panel"
               className={({ isActive }) =>
-                `inline-flex items-center justify-center rounded-xl px-3.5 py-2 text-sm font-semibold transition ${
-                  isActive
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                `inline-flex items-center justify-center rounded-xl px-3.5 py-2 text-sm font-semibold transition ${isActive
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
                 }`
               }
             >
@@ -95,10 +93,9 @@ export default function CatalogLayout() {
             <NavLink
               to={`${basePath}/sepet`}
               className={({ isActive }) =>
-                `inline-flex items-center gap-2 rounded-xl border-2 px-3.5 py-2 text-sm font-bold transition ${
-                  isActive
-                    ? 'border-emerald-600 bg-emerald-50 text-emerald-900'
-                    : 'border-slate-200 bg-white text-slate-800 hover:border-emerald-300 hover:bg-emerald-50/70'
+                `inline-flex items-center gap-2 rounded-xl border-2 px-3.5 py-2 text-sm font-bold transition ${isActive
+                  ? 'border-emerald-600 bg-emerald-50 text-emerald-900'
+                  : 'border-slate-200 bg-white text-slate-800 hover:border-emerald-300 hover:bg-emerald-50/70'
                 }`
               }
             >

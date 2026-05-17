@@ -1,15 +1,15 @@
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    orderBy,
-    query,
-    serverTimestamp,
-    setDoc,
-    updateDoc,
-    where,
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuthStore } from '../store/useAuthStore';
@@ -277,4 +277,101 @@ export async function saveMagazaSelectedToptanci(magazaUid, toptanciId) {
     selectedToptanciId: toptanciId || null,
     updated_at: serverTimestamp(),
   });
+}
+
+/** 
+ * B2B Bağlantı Yönetimi 
+ */
+
+// Mağaza -> Toptancı bağlantı isteği gönderir
+export async function requestWholesalerConnection(storeId, wholesalerId) {
+  if (!storeId || !wholesalerId) throw new Error('missing-ids');
+  const connId = `${storeId}_${wholesalerId}`;
+  await setDoc(doc(db, 'connections', connId), {
+    storeId,
+    wholesalerId,
+    status: 'pending',
+    created_at: serverTimestamp(),
+    updated_at: serverTimestamp(),
+  });
+}
+
+// Bağlantı durumunu sorgular
+export async function getConnection(storeId, wholesalerId) {
+  if (!storeId || !wholesalerId) return null;
+  const connId = `${storeId}_${wholesalerId}`;
+  const snap = await getDoc(doc(db, 'connections', connId));
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() };
+}
+
+// Toptancı: Bekleyen istekleri listeler
+export async function listPendingConnections(wholesalerId) {
+  const q = query(
+    collection(db, 'connections'),
+    where('wholesalerId', '==', wholesalerId),
+    where('status', '==', 'pending'),
+    orderBy('created_at', 'desc')
+  );
+  const snap = await getDocs(q);
+
+  // Mağaza detaylarını da çekmek için zenginleştirme
+  const results = [];
+  for (const d of snap.docs) {
+    const conn = d.data();
+    const storeSnap = await getDoc(doc(db, 'isletmeler', conn.storeId));
+    results.push({
+      id: d.id,
+      ...conn,
+      store: storeSnap.exists() ? { id: storeSnap.id, ...storeSnap.data() } : null
+    });
+  }
+  return results;
+}
+
+// Toptancı: İsteği onayla
+export async function approveConnection(storeId, wholesalerId) {
+  const connId = `${storeId}_${wholesalerId}`;
+  await updateDoc(doc(db, 'connections', connId), {
+    status: 'approved',
+    updated_at: serverTimestamp(),
+  });
+}
+
+// Mağaza: Onaylı toptancılarını listele (Navbar için)
+export async function listMyWholesalers(storeId) {
+  const q = query(
+    collection(db, 'connections'),
+    where('storeId', '==', storeId),
+    where('status', '==', 'approved')
+  );
+  const snap = await getDocs(q);
+  const results = [];
+  for (const d of snap.docs) {
+    const conn = d.data();
+    const wSnap = await getDoc(doc(db, 'isletmeler', conn.wholesalerId));
+    if (wSnap.exists()) {
+      results.push({ id: wSnap.id, ...wSnap.data() });
+    }
+  }
+  return results;
+}
+
+// Toptancı: Onaylı mağazalarımı listele
+export async function listMyApprovedStores(wholesalerId) {
+  const q = query(
+    collection(db, 'connections'),
+    where('wholesalerId', '==', wholesalerId),
+    where('status', '==', 'approved')
+  );
+  const snap = await getDocs(q);
+  const results = [];
+  for (const d of snap.docs) {
+    const conn = d.data();
+    const sSnap = await getDoc(doc(db, 'isletmeler', conn.storeId));
+    if (sSnap.exists()) {
+      results.push({ id: sSnap.id, ...sSnap.data() });
+    }
+  }
+  return results;
 }

@@ -18,7 +18,7 @@ export default function OrdersPage() {
       .then((p) => {
         if (!c && p?.davetKodu) setDavetKodu(String(p.davetKodu));
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       c = true;
     };
@@ -46,8 +46,8 @@ export default function OrdersPage() {
           err?.code === 'permission-denied'
             ? 'Siparisleri okuma izni yok. Firestore kurallarini kontrol edin.'
             : err?.code === 'failed-precondition'
-            ? 'Firestore indeks gerekli: orders koleksiyonu için toptanciId + created_at birleşik indeksini oluşturun.'
-            : `Siparisler yuklenemedi${err?.code ? ` (${err.code})` : ''}.`
+              ? 'Firestore indeks gerekli: orders koleksiyonu için toptanciId + created_at birleşik indeksini oluşturun.'
+              : `Siparisler yuklenemedi${err?.code ? ` (${err.code})` : ''}.`
         );
         setLoading(false);
       }
